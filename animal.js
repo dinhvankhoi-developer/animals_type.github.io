@@ -239,7 +239,6 @@ const saverDataListsAnimals = (data) => {
     if (getAnimals.length === 0) {
       getAnimals.push(...data);
       localStorage.setItem("dataListsAnimals", JSON.stringify(getAnimals));
-      console.log(`lưu trữ thành công`);
     }
   } catch (error) {
     throw new Error(`Lỗi luu dữ liệu ${error}`);
@@ -317,7 +316,7 @@ const handleForSubmit = (e) => {
 const getImgForAPI = async (nameAnimal) => {
   try {
     const res = await fetch(
-      `${global.imgImg.url}v1/search?query=${nameAnimal}&orientation=landscape&size=large`,
+      `${global.imgImg.url}v1/search?query=species${nameAnimal}&orientation=landscape&size=large`,
       {
         method: "GET",
         headers: {
@@ -333,8 +332,6 @@ const getImgForAPI = async (nameAnimal) => {
     }
 
     const data = await res.json();
-    console.log(data);
-    console.log(data.photos);
     if (data.photos && data.photos.length > 0) {
       return data.photos;
     }
@@ -652,12 +649,10 @@ const showDataListAnimals = (data, nameAnimal) => {
 
         // Load the image asynchronously
         getImgForAPI(name).then((data) => {
-          console.log(data);
           for (const item of data) {
             let {
               src: { landscape },
             } = item;
-            console.log(landscape);
 
             const img = document.createElement("img");
             img.src = landscape; // Assign the correct source from API data
