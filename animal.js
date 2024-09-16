@@ -232,8 +232,6 @@ let listAnimals = [
   { id: "4d106b7660b1a", name: "toucan", title: "chim tu căng" },
 ];
 
-console.log(listAnimals);
-
 const saverDataListsAnimals = (data) => {
   try {
     const getAnimals =
@@ -268,7 +266,7 @@ const getDataListsAnimals = () => {
 const addOptionForSelect = () => {
   try {
     const data = getDataListsAnimals();
-    console.log(data);
+
     for (const { id, name, title } of data) {
       const option = document.createElement("option");
       // Thêm giá trị và nội dung cho option
@@ -335,11 +333,10 @@ const getImgForAPI = async (nameAnimal) => {
     }
 
     const data = await res.json();
+    console.log(data);
+    console.log(data.photos);
     if (data.photos && data.photos.length > 0) {
-      return {
-        atl: data.photos[0].alt,
-        src: data.photos[0].src.large,
-      };
+      return data.photos;
     }
     return null;
   } catch (error) {
@@ -655,13 +652,28 @@ const showDataListAnimals = (data, nameAnimal) => {
 
         // Load the image asynchronously
         getImgForAPI(name).then((data) => {
-          let { alt, src } = data;
-          const img = document.createElement("img");
-          img.src = src; // Assign the correct source from API data
-          img.alt = alt; // Assign the correct alt text from API data
-          img.classList.add("img-fluid");
+          console.log(data);
+          for (const item of data) {
+            let {
+              src: { landscape },
+            } = item;
+            console.log(landscape);
 
-          imgAnimal.appendChild(img);
+            const img = document.createElement("img");
+            img.src = landscape; // Assign the correct source from API data
+            img.alt = item.alt; // Assign the correct alt text from API data
+            img.classList.add("img-fluid");
+            const br = document.createElement("br");
+            img.appendChild(br);
+            imgAnimal.appendChild(img);
+          }
+          // let { alt, src } = data;
+          // const img = document.createElement("img");
+          // img.src = src; // Assign the correct source from API data
+          // img.alt = alt; // Assign the correct alt text from API data
+          // img.classList.add("img-fluid");
+
+          // imgAnimal.appendChild(img);
         });
 
         colImg.appendChild(imgAnimal);
@@ -669,7 +681,7 @@ const showDataListAnimals = (data, nameAnimal) => {
         containerImg.appendChild(rowImg);
         modalBody.appendChild(containerImg);
       } else {
-        console.warn("No locations found for animal:", name);
+        throw new Error(`Không tìm thấy hình ảnh cho ${name}`);
       }
 
       modalContent.appendChild(modalBody);
