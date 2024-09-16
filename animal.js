@@ -247,12 +247,20 @@ const saverDataListsAnimals = (data) => {
 
 saverDataListsAnimals(listAnimals);
 
+/**
+ * Lấy dữ liệu danh sách các động vật đã được lưu trữ
+ * sau khi khởi chạy đầu tiên
+ * có thể xoá @param {Array} listAnimals
+ * @returns {array} Danh sách các động vật
+ */
 const getDataListsAnimals = () => {
   let value;
   try {
+    // Lấy dữ liệu đã được lưu trữ trước đó
     const data = JSON.parse(localStorage.getItem("dataListsAnimals"));
     value = data;
   } catch (error) {
+    // Ném ra lỗi nếu không thể truy xuất dữ liệu
     throw new Error(`Truy xuất thất bại ${error}`);
   }
   return value;
@@ -261,18 +269,25 @@ const getDataListsAnimals = () => {
  * Thêm các option vào select box
  *
  * @throws {Error} Thêm option thất bại
+ * @description
+ * 1. Lấy dữ liệu đã được lưu trữ
+ * 2. Tạo các option và thêm vào select
  */
 const addOptionForSelect = () => {
   try {
     const data = getDataListsAnimals();
 
     for (const { id, name, title } of data) {
+      // Tạo 1 option
       const option = document.createElement("option");
+
       // Thêm giá trị và nội dung cho option
       option.value = name;
       option.text = `${name} => ${title}`;
+
       // Thêm thuộc tính id cho option
       option.setAttribute("id", id);
+
       // Thêm option vào select box
       select.appendChild(option);
     }
@@ -313,8 +328,16 @@ const handleForSubmit = (e) => {
 };
 // ! hàm tìm kiếm hinh ảnh theo api
 
+/**
+ * Hàm gọi API và lấy dữ liệu hình ảnh động vật
+ *
+ * @param {string} nameAnimal Tên loại động vật
+ * @returns {Promise<object[]>} Danh sách các hình ảnh
+ * @throws {Error} Lỗi kết nối api
+ */
 const getImgForAPI = async (nameAnimal) => {
   try {
+    // Gọi api và lấy dữ liệu
     const res = await fetch(
       `${global.imgImg.url}v1/search?query=species${nameAnimal}&orientation=landscape&size=large`,
       {
@@ -326,17 +349,22 @@ const getImgForAPI = async (nameAnimal) => {
       }
     );
 
-    // Kiểm tra nếu kết nối không thành công
+    // Kiểm tra xem có kết nối không
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
 
+    // Lấy dữ liệu từ json
     const data = await res.json();
+    // Kiểm tra xem có hình ảnh hay không
     if (data.photos && data.photos.length > 0) {
+      // Trả về danh sách các hình ảnh
       return data.photos;
     }
+    // Không có hình ảnh
     return null;
   } catch (error) {
+    // Ném ra lỗi
     console.error(`Lỗi khi tìm nạp hình ảnh: ${error.message}`);
     throw new Error(`Lỗi khi tìm nạp hình ảnh: ${error.message}`);
   }
